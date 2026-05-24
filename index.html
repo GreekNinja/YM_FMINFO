@@ -3,517 +3,682 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FiveM Server Info</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<title>FiveM Server Lookup</title>
 <style>
-  :root {
-    --bg:      #080b10;
-    --bg2:     #0d1119;
-    --bg3:     #131921;
-    --bg4:     #1a2130;
-    --border:  #1e2d45;
-    --accent:  #00d4ff;
-    --accent2: #ff6b35;
-    --accent3: #7fff6b;
-    --glow:    rgba(0,212,255,0.18);
-    --text:    #c8d8f0;
-    --dim:     #4a6080;
-    --premium: #ffd700;
-  }
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap');
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-  /* ═══ CUSTOM SCROLLBARS ═══ */
-  ::-webkit-scrollbar              { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track        { background: var(--bg3); border-left: 1px solid var(--border); }
-  ::-webkit-scrollbar-thumb        { background: var(--accent); border-radius: 0; }
-  ::-webkit-scrollbar-thumb:hover  { background: #fff; box-shadow: 0 0 6px var(--accent); }
-  ::-webkit-scrollbar-corner       { background: var(--bg3); }
-  * { scrollbar-width: thin; scrollbar-color: var(--accent) var(--bg3); }
+:root{
+  --bg:#080a0d;
+  --bg2:#0f1115;
+  --bg3:#161920;
+  --bg4:#1e2128;
+  --bg5:#252930;
+  --border:#1f2329;
+  --border2:#2d3340;
+  --text:#eceef3;
+  --text2:#7c8494;
+  --text3:#404756;
+  --accent:#00e5aa;
+  --accent2:#00b386;
+  --accent-dim:rgba(0,229,170,0.08);
+  --accent-glow:rgba(0,229,170,0.25);
+  --red:#ff4f4f;
+  --red-dim:rgba(255,79,79,0.1);
+  --yellow:#fbbf24;
+  --yellow-dim:rgba(251,191,36,0.1);
+  --blue:#60a5fa;
+  --blue-dim:rgba(96,165,250,0.1);
+  --purple:#a78bfa;
+  --purple-dim:rgba(167,139,250,0.1);
+  --r:10px;--rs:6px;
+}
 
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Rajdhani', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-  /* Grid bg */
-  body::after {
-    content: '';
-    position: fixed; inset: 0;
-    background-image:
-      linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none; z-index: 0;
-  }
-  /* Scanlines */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px);
-    pointer-events: none; z-index: 9999;
-  }
+html{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
+body{max-width:940px;margin:0 auto;padding:2.5rem 1.5rem 5rem;position:relative}
 
-  /* CORNERS */
-  .corner-deco { position: fixed; width: 60px; height: 60px; pointer-events: none; z-index: 100; opacity: 0.7; }
-  .corner-deco::before, .corner-deco::after { content: ''; position: absolute; background: var(--accent); box-shadow: 0 0 6px var(--accent); }
-  .corner-deco::before { width: 2px; height: 32px; top: 0; left: 0; }
-  .corner-deco::after  { width: 32px; height: 2px; top: 0; left: 0; }
-  .corner-deco.tl { top:14px; left:14px; }
-  .corner-deco.tr { top:14px; right:14px; transform:scaleX(-1); }
-  .corner-deco.bl { bottom:14px; left:14px; transform:scaleY(-1); }
-  .corner-deco.br { bottom:14px; right:14px; transform:scale(-1,-1); }
+/* NOISE OVERLAY */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:0.4;
+}
 
-  .wrapper { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 44px 24px 60px; }
+/* GLOW BG */
+.glow-orb{
+  position:fixed;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,229,170,0.04) 0%,transparent 70%);
+  top:-200px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:0;
+  animation:orbFloat 8s ease-in-out infinite;
+}
+@keyframes orbFloat{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(30px)}}
 
-  /* SEARCH SECTION */
-  .search-section { text-align: center; margin-bottom: 44px; animation: fadeDown 0.6s cubic-bezier(0.22,1,0.36,1) both; }
-  .brand { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 8px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; opacity: 0.8; }
-  h1 { font-size: 48px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: #fff; line-height: 1; margin-bottom: 6px; text-shadow: 0 0 40px rgba(0,212,255,0.25), 0 0 80px rgba(0,212,255,0.1); }
-  h1 .hl { color: var(--accent); }
-  .subtitle { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--dim); letter-spacing: 2px; margin-bottom: 28px; }
+main{position:relative;z-index:1}
 
-  .search-box { display: flex; max-width: 580px; margin: 0 auto; position: relative; }
-  .search-box::before { content: ''; position: absolute; inset: -1px; background: linear-gradient(90deg, var(--accent), var(--accent2)); z-index: -1; opacity: 0.5; transition: opacity 0.3s; }
-  .search-box:focus-within::before { opacity: 1; }
-  .search-box input { flex: 1; background: var(--bg2); border: none; outline: none; padding: 15px 22px; font-family: 'Share Tech Mono', monospace; font-size: 14px; color: var(--text); letter-spacing: 1px; transition: background 0.2s; }
-  .search-box input:focus { background: var(--bg3); }
-  .search-box input::placeholder { color: var(--dim); }
-  .search-box button { background: var(--accent); border: none; padding: 15px 32px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--bg); transition: all 0.2s; position: relative; overflow: hidden; }
-  .search-box button::after { content: ''; position: absolute; inset: 0; background: #fff; transform: translateX(-100%); transition: transform 0.3s; }
-  .search-box button:hover::after { transform: translateX(0); }
-  .search-box button span { position: relative; z-index: 1; }
+/* HEADER */
+.header{text-align:center;margin-bottom:3rem;animation:fadeDown 0.6s ease both}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
 
-  /* STATUS */
-  #status-bar { text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--dim); min-height: 28px; margin-bottom: 20px; letter-spacing: 1px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-  #status-bar.loading { color: var(--accent); }
-  #status-bar.error   { color: var(--accent2); }
-  #status-bar.success { color: var(--accent3); }
-  .spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; display: none; flex-shrink: 0; }
-  .loading .spinner { display: block; }
+.header-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--accent-dim);border:1px solid rgba(0,229,170,0.2);
+  color:var(--accent);font-size:10px;font-weight:600;letter-spacing:0.12em;
+  text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:1.2rem;
+}
+.pulse-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulseDot 2s infinite}
+@keyframes pulseDot{0%,100%{opacity:1;box-shadow:0 0 0 0 var(--accent-glow)}50%{opacity:0.6;box-shadow:0 0 0 4px transparent}}
 
-  #result { display: none; }
-  /* staggered reveal */
-  #result > * { opacity: 0; animation: revealUp 0.5s ease forwards; }
-  #result > *:nth-child(1) { animation-delay:0.03s; }
-  #result > *:nth-child(2) { animation-delay:0.08s; }
-  #result > *:nth-child(3) { animation-delay:0.13s; }
-  #result > *:nth-child(4) { animation-delay:0.18s; }
-  #result > *:nth-child(5) { animation-delay:0.23s; }
-  #result > *:nth-child(6) { animation-delay:0.28s; }
-  #result > *:nth-child(7) { animation-delay:0.33s; }
-  #result > *:nth-child(8) { animation-delay:0.38s; }
-  #result > *:nth-child(9) { animation-delay:0.43s; }
+h1{
+  font-family:'JetBrains Mono',monospace;font-size:2.6rem;font-weight:700;
+  letter-spacing:-0.03em;line-height:1.1;
+  background:linear-gradient(135deg,#fff 30%,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.header-sub{color:var(--text3);font-size:14px;margin-top:10px;font-weight:400}
 
-  /* BANNER */
-  .banner-wrap { width: 100%; height: 200px; overflow: hidden; position: relative; margin-bottom: -2px; background: var(--bg3); }
-  .banner-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
-  .banner-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(8,11,16,0.1) 0%, var(--bg) 100%); }
+/* INPUT CARD */
+.input-card{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:16px;
+  padding:1.75rem;margin-bottom:1.5rem;
+  animation:fadeUp 0.6s 0.1s ease both;
+  box-shadow:0 0 0 1px rgba(255,255,255,0.02) inset;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-  /* MAIN CARD */
-  .main-card { background: var(--bg2); border: 1px solid var(--border); padding: 28px 32px; position: relative; margin-bottom: 16px; overflow: hidden; }
-  .main-card::before { content: ''; position: absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3), var(--accent)); background-size: 200% 100%; animation: shimmer 4s linear infinite; }
-  .main-card::after { content: ''; position: absolute; inset:0; background: radial-gradient(ellipse at top left, rgba(0,212,255,0.04), transparent 60%); pointer-events:none; }
-  .server-header { display: flex; align-items: flex-start; gap: 20px; }
-  .owner-avatar { width:68px; height:68px; border-radius:50%; border:2px solid var(--accent); box-shadow:0 0 16px rgba(0,212,255,0.3); flex-shrink:0; animation:avatarPop 0.5s 0.3s cubic-bezier(0.34,1.56,0.64,1) both; }
-  .server-title { flex: 1; }
-  .server-name { font-size:30px; font-weight:700; letter-spacing:1px; color:#fff; line-height:1.1; }
-  .server-desc { font-size:14px; color:var(--dim); margin-top:4px; }
-  .badge-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
-  .badge { font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:1.5px; padding:3px 10px; border:1px solid; text-transform:uppercase; transition:box-shadow 0.2s; }
-  .badge:hover { box-shadow:0 0 8px currentColor; }
-  .badge.premium  { border-color:var(--premium); color:var(--premium); }
-  .badge.locale   { border-color:var(--accent);  color:var(--accent); }
-  .badge.onesync  { border-color:var(--accent3); color:var(--accent3); }
-  .badge.gamebuild{ border-color:var(--accent2); color:var(--accent2); }
+.input-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:10px}
+.input-row{display:flex;gap:10px;align-items:center}
 
-  /* STATS */
-  .stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); margin-bottom:16px; }
-  .stat-cell { background:var(--bg2); padding:18px 20px; position:relative; overflow:hidden; transition:background 0.2s; cursor:default; }
-  .stat-cell::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background:var(--accent); transform:scaleX(0); transition:transform 0.3s; transform-origin:left; }
-  .stat-cell:hover { background:var(--bg3); }
-  .stat-cell:hover::after { transform:scaleX(1); }
-  .stat-label { font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:2.5px; text-transform:uppercase; color:var(--dim); margin-bottom:6px; }
-  .stat-value { font-size:24px; font-weight:700; color:#fff; line-height:1; }
-  .stat-value.accent  { color:var(--accent);  text-shadow:0 0 12px rgba(0,212,255,0.4); }
-  .stat-value.accent2 { color:var(--accent2); text-shadow:0 0 12px rgba(255,107,53,0.4); }
-  .stat-value.accent3 { color:var(--accent3); text-shadow:0 0 12px rgba(127,255,107,0.4); }
+input[type=text]{
+  width:100%;background:var(--bg3);border:1px solid var(--border2);
+  color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;
+  padding:11px 14px;border-radius:var(--rs);outline:none;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+input[type=text]::placeholder{color:var(--text3)}
+.port-input{flex:0 0 130px}
 
-  /* PLAYER BAR */
-  .player-bar-wrap { background:var(--bg2); border:1px solid var(--border); padding:18px 22px; margin-bottom:16px; }
-  .player-bar-label { display:flex; justify-content:space-between; font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--dim); margin-bottom:10px; }
-  .player-bar-label span:last-child { color:var(--accent); }
-  .bar-track { height:8px; background:var(--bg4); border:1px solid var(--border); position:relative; overflow:hidden; }
-  .bar-track::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(90deg,transparent,transparent 10px,rgba(255,255,255,0.02) 10px,rgba(255,255,255,0.02) 11px); }
-  .bar-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent3)); box-shadow:0 0 14px rgba(0,212,255,0.5); transition:width 1.2s cubic-bezier(0.16,1,0.3,1); width:0; position:relative; }
-  .bar-fill::after { content:''; position:absolute; right:0; top:0; bottom:0; width:3px; background:#fff; opacity:0.8; animation:barPulse 1.5s ease infinite; }
+.lookup-btn{
+  background:var(--accent);color:#000;font-family:'Inter',sans-serif;
+  font-size:13px;font-weight:700;border:none;border-radius:var(--rs);
+  padding:11px 24px;cursor:pointer;white-space:nowrap;
+  display:flex;align-items:center;gap:8px;
+  transition:background 0.2s,transform 0.15s,box-shadow 0.2s;
+  box-shadow:0 0 20px rgba(0,229,170,0.2);
+  letter-spacing:0.02em;
+}
+.lookup-btn:hover{background:#00ffc2;box-shadow:0 0 30px rgba(0,229,170,0.4);transform:translateY(-1px)}
+.lookup-btn:active{transform:scale(0.97)}
+.lookup-btn:disabled{background:var(--bg5);color:var(--text3);cursor:not-allowed;box-shadow:none;transform:none}
 
-  /* PANELS ROW */
-  .panels { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
-  @media(max-width:660px){ .panels{ grid-template-columns:1fr; } }
+.examples{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.ex-label{font-size:10px;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase}
+.ex-btn{
+  font-size:11px;font-family:'JetBrains Mono',monospace;
+  background:var(--bg3);border:1px solid var(--border);color:var(--text3);
+  padding:4px 11px;border-radius:4px;cursor:pointer;transition:all 0.15s;
+}
+.ex-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
 
-  /* PANEL */
-  .panel { background:var(--bg2); border:1px solid var(--border); overflow:hidden; }
-  .panel-head { background:var(--bg3); padding:11px 18px; font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--accent); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
-  .panel-head .count { background:var(--bg4); border:1px solid var(--border); color:var(--dim); padding:1px 7px; font-size:10px; }
-  .panel-body { padding:14px 16px; }
+/* ERROR */
+.err-box{
+  background:var(--red-dim);border:1px solid rgba(255,79,79,0.25);
+  color:var(--red);border-radius:var(--rs);padding:12px 16px;
+  font-size:13px;margin-bottom:1rem;display:none;animation:shake 0.4s ease;
+}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
-  /* PANEL SEARCH INPUT */
-  .panel-search { display:flex; align-items:center; padding:7px 14px; background:var(--bg4); border-bottom:1px solid var(--border); gap:8px; }
-  .panel-search-icon { color:var(--dim); font-size:14px; flex-shrink:0; }
-  .panel-search input { flex:1; background:transparent; border:none; outline:none; font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--text); letter-spacing:0.5px; }
-  .panel-search input::placeholder { color:var(--dim); }
-  .panel-search .clear-btn { background:none; border:none; cursor:pointer; color:var(--dim); font-size:13px; padding:0 2px; transition:color 0.2s; line-height:1; display:none; }
-  .panel-search .clear-btn.visible { display:block; }
-  .panel-search .clear-btn:hover { color:var(--accent2); }
-  .panel-search-count { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--dim); white-space:nowrap; letter-spacing:1px; min-width:50px; text-align:right; }
+/* RESULTS WRAPPER */
+#results{display:none;animation:fadeUp 0.5s ease both}
 
-  /* VARS */
-  .vars-scroll { max-height:280px; overflow-y:auto; }
-  .var-row { display:flex; gap:10px; font-family:'Share Tech Mono',monospace; font-size:12px; padding:6px 16px; border-bottom:1px solid rgba(30,45,69,0.4); transition:background 0.15s; }
-  .var-row:last-child { border-bottom:none; }
-  .var-row:hover { background:rgba(0,212,255,0.04); }
-  .var-row.hidden { display:none; }
-  .var-key { color:var(--dim); flex-shrink:0; min-width:130px; }
-  .var-val { color:var(--accent3); word-break:break-all; }
-  .hl-match { background:rgba(0,212,255,0.2); color:#fff; }
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+@media(max-width:620px){.metrics{grid-template-columns:repeat(2,1fr)}}
 
-  /* TAGS */
-  .tags-wrap { display:flex; flex-wrap:wrap; gap:6px; padding:2px 0; }
-  .tag { font-size:11px; font-family:'Share Tech Mono',monospace; padding:3px 10px; background:var(--bg3); border:1px solid var(--border); color:var(--dim); cursor:default; transition:all 0.2s; }
-  .tag:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-1px); box-shadow:0 2px 8px rgba(0,212,255,0.2); }
+.metric{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.1rem;position:relative;overflow:hidden;
+  transition:border-color 0.2s,transform 0.2s;cursor:default;
+}
+.metric:hover{border-color:var(--border2);transform:translateY(-2px)}
+.metric::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--mc,var(--accent));
+  box-shadow:0 0 12px var(--mc,var(--accent-glow));
+}
+.metric-label{font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:8px;font-weight:700}
+.metric-val{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;color:var(--text)}
+.metric-sub{font-size:10px;color:var(--text3);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.players-bar{height:3px;background:var(--bg5);border-radius:2px;margin-top:8px;overflow:hidden}
+.players-fill{height:100%;border-radius:2px;transition:width 1s cubic-bezier(0.4,0,0.2,1);background:var(--accent);box-shadow:0 0 8px var(--accent-glow)}
+.players-fill.high{background:var(--yellow);box-shadow:0 0 8px rgba(251,191,36,0.4)}
+.players-fill.full{background:var(--red);box-shadow:0 0 8px rgba(255,79,79,0.4)}
 
-  /* PLAYERS TABLE */
-  .player-table-wrap { background:var(--bg2); border:1px solid var(--border); margin-bottom:16px; overflow:hidden; }
-  .player-table-scroll { max-height:320px; overflow-y:auto; }
-  table { width:100%; border-collapse:collapse; }
-  thead tr { background:var(--bg3); position:sticky; top:0; z-index:1; }
-  th { text-align:left; padding:10px 16px; font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:2.5px; text-transform:uppercase; color:var(--dim); font-weight:400; border-bottom:1px solid var(--border); }
-  td { padding:9px 16px; font-size:14px; font-weight:500; border-bottom:1px solid rgba(30,45,69,0.3); }
-  tr:last-child td { border-bottom:none; }
-  tbody tr { transition:background 0.15s; }
-  tbody tr:hover td { background:rgba(0,212,255,0.04); }
-  .ping-good { color:var(--accent3); }
-  .ping-ok   { color:var(--accent); }
-  .ping-bad  { color:var(--accent2); }
-  .ping-ugly { color:#ff3b3b; }
+/* STATUS BADGES */
+.badge-online{
+  display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+  padding:2px 11px;border-radius:20px;font-family:'JetBrains Mono',monospace;
+  background:rgba(0,229,170,0.1);color:var(--accent);border:1px solid rgba(0,229,170,0.25);
+}
+.badge-online::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulseDot 1.5s infinite}
+.badge-offline{
+  display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+  padding:2px 11px;border-radius:20px;font-family:'JetBrains Mono',monospace;
+  background:var(--red-dim);color:var(--red);border:1px solid rgba(255,79,79,0.25);
+}
+.badge-offline::before{content:'';width:6px;height:6px;background:var(--red);border-radius:50%}
 
-  /* RESOURCES */
-  .resources-panel { background:var(--bg2); border:1px solid var(--border); margin-bottom:16px; overflow:hidden; }
-  .resources-grid-wrap { max-height:260px; overflow-y:auto; padding:14px 16px; }
-  .resources-grid { display:flex; flex-wrap:wrap; gap:5px; }
-  .res-item { font-family:'Share Tech Mono',monospace; font-size:11px; padding:3px 9px; background:var(--bg3); border:1px solid var(--border); color:var(--dim); cursor:default; transition:all 0.2s; }
-  .res-item:hover { border-color:var(--accent2); color:var(--accent2); }
-  .res-item.hidden { display:none; }
-  .res-match { background:rgba(255,107,53,0.18); color:var(--accent2); }
-  .no-results { font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--dim); padding:8px 0; letter-spacing:1px; display:none; }
-  .no-results.visible { display:block; }
+/* SECTION */
+.section{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  overflow:hidden;margin-bottom:10px;
+  transition:border-color 0.2s;
+}
+.section:hover{border-color:var(--border2)}
+.section-hdr{
+  display:flex;align-items:center;gap:9px;padding:11px 16px;
+  border-bottom:1px solid var(--border);background:var(--bg3);
+}
+.section-icon{font-size:14px}
+.section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text2);flex:1}
+.section-badge{
+  font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);
+  background:var(--bg4);padding:2px 8px;border-radius:10px;
+}
+.rows{padding:3px 0}
+.row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 16px;border-bottom:1px solid rgba(255,255,255,0.03);
+  font-size:13px;transition:background 0.1s;
+}
+.row:hover{background:rgba(255,255,255,0.02)}
+.row:last-child{border-bottom:none}
+.row-label{color:var(--text3);font-size:12px;flex-shrink:0;margin-right:12px}
+.row-val{color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;text-align:right;word-break:break-all;max-width:60%}
 
-  /* CONNECT */
-  .connect-section { display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:18px 24px; background:var(--bg2); border:1px solid var(--accent); box-shadow:0 0 30px rgba(0,212,255,0.08),inset 0 0 30px rgba(0,212,255,0.02); margin-bottom:16px; position:relative; overflow:hidden; }
-  .connect-section::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--accent),transparent); animation:scanline 3s ease infinite; }
-  .connect-endpoint-label { font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:3px; color:var(--dim); text-transform:uppercase; margin-bottom:5px; }
-  .connect-endpoint { font-family:'Share Tech Mono',monospace; font-size:15px; color:var(--accent); letter-spacing:1px; }
-  .connect-btns { display:flex; gap:10px; margin-left:auto; flex-wrap:wrap; }
-  .btn-connect { background:transparent; border:1px solid; padding:11px 26px; cursor:pointer; font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:700; letter-spacing:3px; text-transform:uppercase; text-decoration:none; transition:all 0.25s; position:relative; overflow:hidden; }
-  .btn-connect.primary   { border-color:var(--accent3); color:var(--accent3); }
-  .btn-connect.secondary { border-color:var(--accent);  color:var(--accent); }
-  .btn-connect::after { content:''; position:absolute; inset:0; transform:scaleX(0); transform-origin:left; transition:transform 0.25s; }
-  .btn-connect.primary::after   { background:var(--accent3); }
-  .btn-connect.secondary::after { background:var(--accent); }
-  .btn-connect span { position:relative; z-index:1; }
-  .btn-connect:hover span { color:var(--bg); }
-  .btn-connect:hover::after { transform:scaleX(1); }
+/* GRID */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+@media(max-width:620px){.two-col{grid-template-columns:1fr}}
 
-  /* LIVE DOT */
-  .live-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--accent3); margin-right:7px; box-shadow:0 0 6px var(--accent3); animation:pulse 1.6s ease infinite; }
+/* BANNER */
+.banner-wrap{margin-bottom:12px;border-radius:var(--r);overflow:hidden;border:1px solid var(--border)}
+.banner-wrap img{width:100%;max-height:130px;object-fit:cover;display:block}
 
-  /* KEYFRAMES */
-  @keyframes fadeDown   { from{opacity:0;transform:translateY(-24px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes revealUp   { from{opacity:0;transform:translateY(18px)}  to{opacity:1;transform:translateY(0)} }
-  @keyframes avatarPop  { from{opacity:0;transform:scale(0.6)}        to{opacity:1;transform:scale(1)} }
-  @keyframes pulse      { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.85)} }
-  @keyframes spin       { to{transform:rotate(360deg)} }
-  @keyframes shimmer    { 0%{background-position:0% 0} 100%{background-position:200% 0} }
-  @keyframes barPulse   { 0%,100%{opacity:0.8} 50%{opacity:0.2} }
-  @keyframes scanline   { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+/* OWNER */
+.owner-row{display:flex;align-items:center;gap:12px;padding:12px 16px}
+.owner-avatar{width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);object-fit:cover}
+.owner-name{font-size:13px;color:var(--text);font-weight:500}
+.owner-link{font-size:11px;color:var(--accent);text-decoration:none;font-family:'JetBrains Mono',monospace;opacity:0.8}
+.owner-link:hover{opacity:1;text-decoration:underline}
+
+/* TAGS */
+.tags-wrap{padding:12px 16px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{
+  font-size:11px;font-family:'JetBrains Mono',monospace;
+  background:var(--bg3);border:1px solid var(--border2);color:var(--text3);
+  padding:3px 10px;border-radius:4px;transition:all 0.15s;cursor:default;
+}
+.tag:hover{color:var(--accent);border-color:rgba(0,229,170,0.3)}
+
+/* TABS */
+.tabs-section{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  overflow:hidden;margin-bottom:10px;
+}
+.tabs-hdr{display:flex;border-bottom:1px solid var(--border);background:var(--bg3);gap:0}
+.tab-btn{
+  padding:11px 20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
+  color:var(--text3);background:none;border:none;cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  display:flex;align-items:center;gap:7px;transition:all 0.15s;
+}
+.tab-btn:hover{color:var(--text2)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-count{
+  font-size:10px;background:var(--bg4);padding:2px 7px;border-radius:10px;
+  color:var(--text3);font-family:'JetBrains Mono',monospace;transition:all 0.15s;
+}
+.tab-btn.active .tab-count{background:var(--accent-dim);color:var(--accent)}
+.tab-pane{display:none}
+.tab-pane.active{display:block;animation:fadeIn 0.25s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* SEARCH */
+.tab-search{padding:10px 14px;border-bottom:1px solid var(--border)}
+.tab-search input{font-size:12px;padding:8px 12px}
+.search-meta{font-size:10px;color:var(--text3);padding:5px 16px 8px;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em}
+
+/* PLAYERS */
+.players-list{max-height:400px;overflow-y:auto}
+.players-list::-webkit-scrollbar{width:3px}
+.players-list::-webkit-scrollbar-track{background:var(--bg2)}
+.players-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.player-row{
+  display:flex;align-items:center;gap:10px;padding:8px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.03);transition:background 0.1s;
+}
+.player-row:hover{background:rgba(255,255,255,0.025)}
+.player-row:last-child{border-bottom:none}
+.p-rank{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);width:28px;flex-shrink:0;text-align:right}
+.p-name{font-size:13px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.p-id{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);flex-shrink:0}
+.p-ping{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  padding:2px 8px;border-radius:4px;flex-shrink:0;font-weight:600;min-width:52px;text-align:center;
+}
+.ping-low{background:rgba(0,229,170,0.1);color:var(--accent)}
+.ping-mid{background:var(--yellow-dim);color:var(--yellow)}
+.ping-high{background:var(--red-dim);color:var(--red)}
+
+/* RESOURCES */
+.resources-grid{
+  display:flex;flex-wrap:wrap;gap:5px;padding:14px 16px;
+  max-height:400px;overflow-y:auto;
+}
+.resources-grid::-webkit-scrollbar{width:3px}
+.resources-grid::-webkit-scrollbar-track{background:var(--bg2)}
+.resources-grid::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.res-tag{
+  font-size:10px;font-family:'JetBrains Mono',monospace;
+  background:var(--bg3);border:1px solid var(--border);color:var(--text3);
+  padding:3px 9px;border-radius:4px;cursor:default;transition:all 0.12s;
+}
+.res-tag:hover{color:var(--text2);border-color:var(--border2)}
+.res-tag.hl{background:var(--accent-dim);border-color:rgba(0,229,170,0.3);color:var(--accent)}
+
+/* EMPTY */
+.empty{padding:28px;text-align:center;color:var(--text3);font-size:12px;font-family:'JetBrains Mono',monospace}
+
+/* SPINNER */
+.spinner{
+  width:15px;height:15px;border:2px solid rgba(0,0,0,0.2);
+  border-top-color:#000;border-radius:50%;animation:spin 0.65s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* STAGGER ANIMATION FOR RESULT SECTIONS */
+.anim-1{animation:fadeUp 0.4s 0.05s ease both}
+.anim-2{animation:fadeUp 0.4s 0.1s ease both}
+.anim-3{animation:fadeUp 0.4s 0.15s ease both}
+.anim-4{animation:fadeUp 0.4s 0.2s ease both}
+.anim-5{animation:fadeUp 0.4s 0.25s ease both}
+.anim-6{animation:fadeUp 0.4s 0.3s ease both}
+.anim-7{animation:fadeUp 0.4s 0.35s ease both}
+
+/* COUNTER ANIMATION */
+@keyframes countUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.count-anim{animation:countUp 0.4s ease both}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:10px 0}
+
+/* FOOTER */
+.footer{text-align:center;margin-top:3rem;color:var(--text3);font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:0.06em}
 </style>
 </head>
 <body>
+<div class="glow-orb"></div>
+<main>
 
-<div class="corner-deco tl"></div>
-<div class="corner-deco tr"></div>
-<div class="corner-deco bl"></div>
-<div class="corner-deco br"></div>
-
-<div class="wrapper">
-  <div class="search-section">
-    <div class="brand">// FiveM Network Scanner</div>
-    <h1>SERVER <span class="hl">INTEL</span></h1>
-    <div class="subtitle">ENTER SERVER ID OR CFX LINK TO BEGIN</div>
-    <div class="search-box">
-      <input type="text" id="serverInput" placeholder="bokeep  ·  cfx.re/join/bokeep" autocomplete="off" spellcheck="false" />
-      <button onclick="fetchServer()"><span>SCAN</span></button>
-    </div>
-  </div>
-
-  <div id="status-bar">
-    <div class="spinner"></div>
-    <span id="status-text">AWAITING TARGET ID</span>
-  </div>
-
-  <div id="result"></div>
+<div class="header">
+  <div class="header-badge"><span class="pulse-dot"></span>FiveM Tools</div>
+  <h1>Server Lookup</h1>
+  <p class="header-sub">Explore any FiveM server — host info, players, resources and more</p>
 </div>
 
+<div class="input-card">
+  <div class="input-label">Server Identifier</div>
+  <div class="input-row">
+    <div style="flex:1">
+      <input type="text" id="ip-input" placeholder="CFX code (e.g. bokeep)  or  IP  or  cfx.re/join/…" />
+    </div>
+    <div class="port-input">
+      <input type="text" id="port-input" placeholder="Port: 30120" />
+    </div>
+    <button class="lookup-btn" id="lookup-btn" onclick="doLookup()">
+      <span class="spinner" id="spin" style="display:none"></span>
+      <span id="btn-icon">⌕</span>
+      Search
+    </button>
+  </div>
+  <div class="examples">
+    <span class="ex-label">Try:</span>
+    <button class="ex-btn" onclick="fillEx('bokeep','')">bokeep</button>
+    <button class="ex-btn" onclick="fillEx('185.29.166.206','30120')">185.29.166.206</button>
+    <button class="ex-btn" onclick="fillEx('cfx.re/join/bokeep','')">cfx.re/join/bokeep</button>
+  </div>
+</div>
+
+<div class="err-box" id="err-box"></div>
+
+<div id="results">
+
+  <div id="banner-wrap" class="banner-wrap anim-1" style="display:none">
+    <img id="banner-img" src="" alt="Server Banner" />
+  </div>
+
+  <div class="metrics anim-1">
+    <div class="metric" style="--mc:var(--accent)">
+      <div class="metric-label">Status</div>
+      <div id="m-status" class="metric-val">—</div>
+      <div id="m-mode" class="metric-sub"></div>
+    </div>
+    <div class="metric" style="--mc:var(--blue)">
+      <div class="metric-label">Players</div>
+      <div id="m-players" class="metric-val">—</div>
+      <div class="players-bar"><div class="players-fill" id="pfill" style="width:0%"></div></div>
+    </div>
+    <div class="metric" style="--mc:var(--purple)">
+      <div class="metric-label">Host Country</div>
+      <div id="m-flag" class="metric-val" style="font-size:22px">—</div>
+      <div id="m-cname" class="metric-sub"></div>
+    </div>
+    <div class="metric" style="--mc:var(--yellow)">
+      <div class="metric-label">Provider</div>
+      <div id="m-isp" class="metric-val" style="font-size:12px;margin-top:4px">—</div>
+      <div id="m-asn" class="metric-sub"></div>
+    </div>
+  </div>
+
+  <div class="two-col anim-2">
+    <div class="section">
+      <div class="section-hdr"><span class="section-icon">🎮</span><span class="section-title">Server Info</span></div>
+      <div class="rows">
+        <div class="row"><span class="row-label">Name</span><span class="row-val" id="r-name">—</span></div>
+        <div class="row"><span class="row-label">Players</span><span class="row-val" id="r-players">—</span></div>
+        <div class="row"><span class="row-label">Gamemode</span><span class="row-val" id="r-gamemode">—</span></div>
+        <div class="row"><span class="row-label">Map</span><span class="row-val" id="r-map">—</span></div>
+        <div class="row"><span class="row-label">Build</span><span class="row-val" id="r-build">—</span></div>
+        <div class="row"><span class="row-label">OneSync</span><span class="row-val" id="r-onesync">—</span></div>
+        <div class="row"><span class="row-label">Locale</span><span class="row-val" id="r-locale">—</span></div>
+        <div class="row"><span class="row-label">Premium</span><span class="row-val" id="r-premium">—</span></div>
+        <div class="row"><span class="row-label">txAdmin</span><span class="row-val" id="r-txadmin">—</span></div>
+        <div class="row"><span class="row-label">FXServer</span><span class="row-val" id="r-fx">—</span></div>
+        <div class="row"><span class="row-label">Last Seen</span><span class="row-val" id="r-seen">—</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-hdr"><span class="section-icon">🌐</span><span class="section-title">Host / IP</span></div>
+      <div class="rows">
+        <div class="row"><span class="row-label">IP</span><span class="row-val" id="r-ip">—</span></div>
+        <div class="row"><span class="row-label">Endpoint</span><span class="row-val" id="r-ep">—</span></div>
+        <div class="row"><span class="row-label">Country</span><span class="row-val" id="r-country">—</span></div>
+        <div class="row"><span class="row-label">City</span><span class="row-val" id="r-city">—</span></div>
+        <div class="row"><span class="row-label">Region</span><span class="row-val" id="r-region">—</span></div>
+        <div class="row"><span class="row-label">ISP</span><span class="row-val" id="r-isp">—</span></div>
+        <div class="row"><span class="row-label">ASN</span><span class="row-val" id="r-as">—</span></div>
+        <div class="row"><span class="row-label">Timezone</span><span class="row-val" id="r-tz">—</span></div>
+        <div class="row"><span class="row-label">Coordinates</span><span class="row-val" id="r-coords">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col anim-3">
+    <div class="section" id="owner-section" style="display:none">
+      <div class="section-hdr"><span class="section-icon">👤</span><span class="section-title">Owner</span></div>
+      <div class="owner-row">
+        <img class="owner-avatar" id="owner-av" src="" alt="" />
+        <div>
+          <div class="owner-name" id="owner-name"></div>
+          <a class="owner-link" id="owner-link" href="#" target="_blank"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-hdr"><span class="section-icon">🏷️</span><span class="section-title">Tags</span></div>
+      <div class="tags-wrap" id="r-tags"></div>
+    </div>
+  </div>
+
+  <div class="tabs-section anim-4">
+    <div class="tabs-hdr">
+      <button class="tab-btn active" id="tbtn-players" onclick="switchTab('players')">
+        👥 Players <span class="tab-count" id="tc-p">0</span>
+      </button>
+      <button class="tab-btn" id="tbtn-resources" onclick="switchTab('resources')">
+        📦 Resources <span class="tab-count" id="tc-r">0</span>
+      </button>
+    </div>
+
+    <div class="tab-pane active" id="tab-players">
+      <div class="tab-search">
+        <input type="text" id="psearch" placeholder="🔍  Search players..." oninput="filterPlayers()" />
+      </div>
+      <div class="search-meta" id="pmeta"></div>
+      <div class="players-list" id="plist"></div>
+    </div>
+
+    <div class="tab-pane" id="tab-resources">
+      <div class="tab-search">
+        <input type="text" id="rsearch" placeholder="🔍  Search resources..." oninput="filterResources()" />
+      </div>
+      <div class="search-meta" id="rmeta"></div>
+      <div class="resources-grid" id="rgrid"></div>
+    </div>
+  </div>
+
+</div><!-- #results -->
+
+<div class="footer">fivem server lookup · powered by cfx.re api &amp; ip-api.com</div>
+
+</main>
 <script>
-const API = 'https://servers-frontend.fivem.net/api/servers/single/';
+const CC={GR:"Greece",US:"United States",DE:"Germany",FR:"France",GB:"United Kingdom",NL:"Netherlands",RU:"Russia",PL:"Poland",TR:"Turkey",CA:"Canada",AU:"Australia",BR:"Brazil",SE:"Sweden",FI:"Finland",NO:"Norway",IT:"Italy",ES:"Spain",UA:"Ukraine",RO:"Romania",CZ:"Czechia",PT:"Portugal",BE:"Belgium",CH:"Switzerland",AT:"Austria",HU:"Hungary",BG:"Bulgaria",SK:"Slovakia",DK:"Denmark",ZA:"South Africa",SG:"Singapore",JP:"Japan",KR:"South Korea",IN:"India",CN:"China",MX:"Mexico",LT:"Lithuania",LV:"Latvia",EE:"Estonia",RS:"Serbia",HR:"Croatia",CY:"Cyprus",SI:"Slovenia",BA:"Bosnia",MK:"North Macedonia",AL:"Albania"};
+const PM={pt:"Platinum 🏆",au:"Gold 🥇",ag:"Silver 🥈"};
 
-function extractCode(input) {
-  input = input.trim().replace(/\/+$/, '');
-  let m = input.match(/cfx\.re\/join\/([a-z0-9]+)/i);
-  if (m) return m[1].toLowerCase();
-  m = input.match(/^([a-z0-9]+)$/i);
-  if (m) return m[1].toLowerCase();
-  return null;
+let allPlayers=[], allResources=[];
+
+function flag(cc){
+  if(!cc||cc.length!==2)return'';
+  return String.fromCodePoint(...[...cc.toUpperCase()].map(c=>0x1F1E6+c.charCodeAt(0)-65));
 }
-function pingClass(p) {
-  if (p < 80)  return 'ping-good';
-  if (p < 150) return 'ping-ok';
-  if (p < 250) return 'ping-bad';
-  return 'ping-ugly';
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function set(id,val){const e=document.getElementById(id);if(e)e.textContent=(val!=null&&val!=='')? val:'—'}
+function showErr(m){const b=document.getElementById('err-box');b.textContent='✕  '+m;b.style.display='block'}
+function hideErr(){document.getElementById('err-box').style.display='none'}
+function setLoading(on){
+  document.getElementById('spin').style.display=on?'inline-block':'none';
+  document.getElementById('btn-icon').style.display=on?'none':'inline';
+  document.getElementById('lookup-btn').disabled=on;
 }
-function setStatus(msg, cls) {
-  document.getElementById('status-bar').className = cls || '';
-  document.getElementById('status-text').textContent = msg;
+function fillEx(ip,port){
+  document.getElementById('ip-input').value=ip;
+  document.getElementById('port-input').value=port;
 }
-function esc(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function highlight(str, q, cls) {
-  cls = cls || 'hl-match';
-  if (!q) return esc(str);
-  const escaped = esc(str);
-  const re = new RegExp('(' + esc(q).replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
-  return escaped.replace(re, `<span class="${cls}">$1</span>`);
-}
-function premiumLabel(p) {
-  return { pt:'Platinum', au:'Gold', ag:'Silver' }[p] || p.toUpperCase();
-}
-
-document.getElementById('serverInput').addEventListener('keydown', e => { if (e.key==='Enter') fetchServer(); });
-
-async function fetchServer() {
-  const raw = document.getElementById('serverInput').value;
-  const code = extractCode(raw);
-  if (!code) { setStatus('// INVALID INPUT — enter server ID or cfx.re/join/ link', 'error'); return; }
-  setStatus(`// SCANNING ${code.toUpperCase()}...`, 'loading');
-  const res = document.getElementById('result');
-  res.style.display = 'none'; res.innerHTML = '';
-  try {
-    const r = await fetch(API + code);
-    if (!r.ok) throw new Error('Server not found (HTTP ' + r.status + ')');
-    const json = await r.json();
-    renderResult(json, code);
-  } catch(e) {
-    setStatus('// ERROR: ' + e.message, 'error');
-  }
-}
-
-function renderResult(json, code) {
-  const d = json.Data;
-  const v = d.vars || {};
-  const players   = d.players   || [];
-  const resources = d.resources || [];
-  const tags = (v.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
-  const pct  = Math.min(100, Math.round((d.clients / d.svMaxclients) * 100));
-  const avgPing = players.length ? Math.round(players.reduce((s,p)=>s+p.ping,0)/players.length) : 0;
-  const safeVars = Object.entries(v).filter(([k,val])=>val&&!['banner_connecting','banner_detail'].includes(k));
-
-  let html = '';
-
-  if (v.banner_detail)
-    html += `<div class="banner-wrap"><img src="${esc(v.banner_detail)}" alt="banner" onerror="this.parentElement.style.display='none'"><div class="banner-overlay"></div></div>`;
-
-  html += `
-  <div class="main-card">
-    <div class="server-header">
-      ${d.ownerAvatar?`<img class="owner-avatar" src="${esc(d.ownerAvatar)}" alt="owner">`:''}
-      <div class="server-title">
-        <div class="server-name">${esc(d.hostname)}</div>
-        ${v.sv_projectDesc?`<div class="server-desc">${esc(v.sv_projectDesc)}</div>`:''}
-        <div class="badge-row">
-          ${v.premium?`<span class="badge premium">★ ${premiumLabel(v.premium)}</span>`:''}
-          ${v.locale?`<span class="badge locale">${esc(v.locale)}</span>`:''}
-          ${v.onesync_enabled==='true'?`<span class="badge onesync">OneSync ON</span>`:''}
-          ${v.sv_enforceGameBuild?`<span class="badge gamebuild">Build ${esc(v.sv_enforceGameBuild)}</span>`:''}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-cell"><div class="stat-label">Players</div><div class="stat-value accent">${d.clients}</div></div>
-    <div class="stat-cell"><div class="stat-label">Max Slots</div><div class="stat-value">${d.svMaxclients}</div></div>
-    <div class="stat-cell"><div class="stat-label">Capacity</div><div class="stat-value ${pct>80?'accent2':pct>50?'accent':'accent3'}">${pct}%</div></div>
-    <div class="stat-cell"><div class="stat-label">Game Type</div><div class="stat-value" style="font-size:16px">${esc(d.gametype)}</div></div>
-    <div class="stat-cell"><div class="stat-label">Map</div><div class="stat-value" style="font-size:14px">${esc(d.mapname)}</div></div>
-    <div class="stat-cell"><div class="stat-label">Avg Ping</div><div class="stat-value ${pingClass(avgPing)}">${avgPing}ms</div></div>
-    <div class="stat-cell"><div class="stat-label">Resources</div><div class="stat-value accent2">${resources.length}</div></div>
-    <div class="stat-cell"><div class="stat-label">Owner</div><div class="stat-value" style="font-size:15px">${esc(d.ownerName||code)}</div></div>
-  </div>
-
-  <div class="player-bar-wrap">
-    <div class="player-bar-label"><span>PLAYER LOAD</span><span>${d.clients} / ${d.svMaxclients} &nbsp;(${pct}%)</span></div>
-    <div class="bar-track"><div class="bar-fill" id="barFill"></div></div>
-  </div>
-
-  <div class="panels">
-    <div class="panel">
-      <div class="panel-head">Server Variables <span class="count" id="varsCount">${safeVars.length}</span></div>
-      <div class="panel-search">
-        <span class="panel-search-icon">⌕</span>
-        <input type="text" id="varSearch" placeholder="search variables..." oninput="filterVars()" autocomplete="off" spellcheck="false" />
-        <button class="clear-btn" id="varClear" onclick="clearVarSearch()">✕</button>
-        <span class="panel-search-count" id="varSearchCount"></span>
-      </div>
-      <div class="vars-scroll" id="varsList">
-        ${safeVars.map(([k,val])=>`<div class="var-row" data-key="${esc(k)}" data-val="${esc(String(val))}"><span class="var-key">${esc(k)}</span><span class="var-val">${esc(String(val).substring(0,80))}${String(val).length>80?'…':''}</span></div>`).join('')}
-      </div>
-    </div>
-    <div class="panel">
-      <div class="panel-head">Tags <span class="count">${tags.length}</span></div>
-      <div class="panel-body">
-        <div class="tags-wrap">
-          ${tags.length?tags.map(t=>`<span class="tag">${esc(t)}</span>`).join(''):`<span style="color:var(--dim);font-size:13px;font-family:'Share Tech Mono',monospace">No tags</span>`}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="player-table-wrap">
-    <div class="panel-head">
-      <span><span class="live-dot"></span>Online Players</span>
-      <span class="count">${players.length} listed</span>
-    </div>
-    <div class="panel-search">
-      <span class="panel-search-icon">⌕</span>
-      <input type="text" id="playerSearch" placeholder="search players..." oninput="filterPlayers()" autocomplete="off" spellcheck="false" />
-      <button class="clear-btn" id="playerClear" onclick="clearPlayerSearch()">✕</button>
-      <span class="panel-search-count" id="playerSearchCount"></span>
-    </div>
-    <div class="player-table-scroll">
-      <table>
-        <thead><tr><th>#</th><th>Name</th><th>ID</th><th>Ping</th></tr></thead>
-        <tbody id="playerBody">${renderPlayerRows(players)}</tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="resources-panel">
-    <div class="panel-head">Resources <span class="count" id="resCount">${resources.length}</span></div>
-    <div class="panel-search">
-      <span class="panel-search-icon">⌕</span>
-      <input type="text" id="resSearch" placeholder="search resources..." oninput="filterResources()" autocomplete="off" spellcheck="false" />
-      <button class="clear-btn" id="resClear" onclick="clearResSearch()">✕</button>
-      <span class="panel-search-count" id="resSearchCount"></span>
-    </div>
-    <div class="resources-grid-wrap">
-      <div class="resources-grid" id="resGrid">
-        ${resources.map(r=>`<span class="res-item" data-name="${esc(r)}">${esc(r)}</span>`).join('')}
-      </div>
-      <div class="no-results" id="resNoResults">// No matching resources</div>
-    </div>
-  </div>
-
-  <div class="connect-section">
-    <div>
-      <div class="connect-endpoint-label">Connect Endpoint</div>
-      <div class="connect-endpoint">${esc((d.connectEndPoints||[code])[0])}</div>
-    </div>
-    <div class="connect-btns">
-      <a class="btn-connect primary"   href="fivem://connect/${esc((d.connectEndPoints||[code])[0])}"><span>⬢ CONNECT</span></a>
-      <a class="btn-connect secondary" href="https://cfx.re/join/${code}" target="_blank"><span>CFX LINK</span></a>
-    </div>
-  </div>`;
-
-  window._allPlayers   = players;
-  window._allResources = resources;
-  window._allVars      = safeVars;
-
-  const container = document.getElementById('result');
-  container.innerHTML = html;
-  container.style.display = 'block';
-  setStatus(`// ${code.toUpperCase()} — ${d.clients} players online`, 'success');
-
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    const fill = document.getElementById('barFill');
-    if (fill) fill.style.width = pct + '%';
-  }));
-}
-
-/* PLAYER ROWS */
-function renderPlayerRows(players, q) {
-  if (!players.length) return `<tr><td colspan="4" style="text-align:center;color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:12px;padding:20px">// No players found</td></tr>`;
-  return players.map((p,i)=>`
-    <tr>
-      <td style="color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:11px">${i+1}</td>
-      <td>${highlight(p.name,q)}</td>
-      <td style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim)">${p.id}</td>
-      <td class="${pingClass(p.ping)}" style="font-family:'Share Tech Mono',monospace;font-size:12px">${p.ping}ms</td>
-    </tr>`).join('');
-}
-
-/* FILTER PLAYERS */
-function filterPlayers() {
-  const q = document.getElementById('playerSearch').value.toLowerCase();
-  const filtered = (window._allPlayers||[]).filter(p=>p.name.toLowerCase().includes(q));
-  document.getElementById('playerBody').innerHTML = renderPlayerRows(filtered, q);
-  document.getElementById('playerClear').classList.toggle('visible', q.length>0);
-  document.getElementById('playerSearchCount').textContent = q ? `${filtered.length}/${(window._allPlayers||[]).length}` : '';
-}
-function clearPlayerSearch() { document.getElementById('playerSearch').value=''; filterPlayers(); }
-
-/* FILTER RESOURCES */
-function filterResources() {
-  const q = document.getElementById('resSearch').value.toLowerCase();
-  const items = document.querySelectorAll('#resGrid .res-item');
-  let shown = 0;
-  items.forEach(el => {
-    const name = el.dataset.name.toLowerCase();
-    const match = name.includes(q);
-    el.classList.toggle('hidden', !match);
-    if (match) { el.innerHTML = highlight(el.dataset.name, q, 'res-match'); shown++; }
+function switchTab(name){
+  ['players','resources'].forEach(n=>{
+    document.getElementById('tbtn-'+n).classList.toggle('active',n===name);
+    document.getElementById('tab-'+n).classList.toggle('active',n===name);
   });
-  document.getElementById('resNoResults').classList.toggle('visible', shown===0 && q.length>0);
-  document.getElementById('resClear').classList.toggle('visible', q.length>0);
-  document.getElementById('resSearchCount').textContent = q ? `${shown}/${(window._allResources||[]).length}` : '';
-  document.getElementById('resCount').textContent = q ? shown : (window._allResources||[]).length;
 }
-function clearResSearch() { document.getElementById('resSearch').value=''; filterResources(); }
+function pingClass(p){return p<=80?'ping-low':p<=160?'ping-mid':'ping-high'}
 
-/* FILTER VARS */
-function filterVars() {
-  const q = document.getElementById('varSearch').value.toLowerCase();
-  const rows = document.querySelectorAll('#varsList .var-row');
-  let shown = 0;
-  rows.forEach(row => {
-    const match = row.dataset.key.toLowerCase().includes(q) || row.dataset.val.toLowerCase().includes(q);
-    row.classList.toggle('hidden', !match);
-    if (match) {
-      row.querySelector('.var-key').innerHTML = highlight(row.dataset.key, q);
-      const v = row.dataset.val;
-      row.querySelector('.var-val').innerHTML = highlight(v.substring(0,80), q) + (v.length>80?'…':'');
-      shown++;
+function renderPlayers(list){
+  const el=document.getElementById('plist');
+  if(!list.length){el.innerHTML='<div class="empty">No players found</div>';return}
+  el.innerHTML=list.map((p,i)=>`
+    <div class="player-row">
+      <span class="p-rank">${i+1}</span>
+      <span class="p-name">${esc(p.name)}</span>
+      <span class="p-id">#${p.id}</span>
+      <span class="p-ping ${pingClass(p.ping)}">${p.ping} ms</span>
+    </div>`).join('');
+}
+
+function renderResources(list,q){
+  const el=document.getElementById('rgrid');
+  if(!list.length){el.innerHTML='<div class="empty" style="width:100%">No resources found</div>';return}
+  el.innerHTML=list.map(r=>{
+    const hl=q&&r.toLowerCase().includes(q.toLowerCase());
+    return`<span class="res-tag${hl?' hl':''}">${esc(r)}</span>`;
+  }).join('');
+}
+
+function filterPlayers(){
+  const q=document.getElementById('psearch').value.toLowerCase().trim();
+  const f=q?allPlayers.filter(p=>p.name.toLowerCase().includes(q)):allPlayers;
+  document.getElementById('pmeta').textContent=q?`${f.length} of ${allPlayers.length} players`:`${allPlayers.length} players online · sorted by ping`;
+  renderPlayers(f);
+}
+function filterResources(){
+  const q=document.getElementById('rsearch').value.trim();
+  const f=q?allResources.filter(r=>r.toLowerCase().includes(q.toLowerCase())):allResources;
+  document.getElementById('rmeta').textContent=q?`${f.length} of ${allResources.length} resources`:`${allResources.length} total resources`;
+  renderResources(f,q);
+}
+
+function parseInput(raw,portRaw){
+  let ip=raw.trim(),port=portRaw.trim()||'30120',cfxCode=null;
+  const m1=ip.match(/cfx\.re\/join\/([a-zA-Z0-9]+)/i);
+  if(m1){cfxCode=m1[1];ip=null;}
+  else if(/^[a-zA-Z0-9]{4,12}$/.test(ip)&&!ip.includes('.')){cfxCode=ip;ip=null;}
+  else if(ip.includes(':')&&!ip.startsWith('cfx')){const p=ip.split(':');ip=p[0];port=p[1]||port;}
+  return{ip,port,cfxCode};
+}
+
+async function doLookup(){
+  hideErr();
+  document.getElementById('results').style.display='none';
+  const rawIp=document.getElementById('ip-input').value;
+  const rawPort=document.getElementById('port-input').value;
+  if(!rawIp.trim()){showErr('Enter an IP address or CFX code');return}
+  setLoading(true);
+  try{
+    const{ip,port,cfxCode}=parseInput(rawIp,rawPort);
+    let srv=null,resolvedIp=ip;
+
+    if(cfxCode){
+      try{
+        const r=await fetch(`https://servers-frontend.fivem.net/api/servers/single/${cfxCode}`);
+        if(r.ok){const d=await r.json();srv=d.Data;if(srv?.connectEndPoints?.length)resolvedIp=srv.connectEndPoints[0].split(':')[0];}
+      }catch(e){console.warn('CFX failed',e)}
     }
-  });
-  document.getElementById('varClear').classList.toggle('visible', q.length>0);
-  document.getElementById('varSearchCount').textContent = q ? `${shown}/${(window._allVars||[]).length}` : '';
-  document.getElementById('varsCount').textContent = q ? shown : (window._allVars||[]).length;
+
+    let geo={};
+    if(resolvedIp){
+      try{
+        const r=await fetch(`http://ip-api.com/json/${resolvedIp}?fields=status,country,countryCode,regionName,city,lat,lon,timezone,isp,org,as,query`);
+        if(r.ok){const d=await r.json();geo={ip:d.query,cc:d.countryCode,country:d.country,region:d.regionName,city:d.city,lat:d.lat,lon:d.lon,tz:d.timezone,isp:d.isp||d.org,asn:d.as};}
+      }catch(e){console.warn('GeoIP failed',e)}
+    }
+
+    populate(srv,geo,resolvedIp,cfxCode);
+  }catch(e){showErr('Error: '+e.message)}
+  setLoading(false);
 }
-function clearVarSearch() { document.getElementById('varSearch').value=''; filterVars(); }
+
+function populate(srv,geo,resolvedIp,cfxCode){
+  const res=document.getElementById('results');
+  res.style.display='block';
+  // re-trigger animations
+  res.querySelectorAll('[class*="anim-"]').forEach(el=>{
+    el.style.animation='none';el.offsetHeight;el.style.animation='';
+  });
+
+  const fl=flag(geo.cc||'');
+  const cname=CC[geo.cc]||geo.country||geo.cc||'Unknown';
+
+  // Banner
+  const bw=document.getElementById('banner-wrap');
+  if(srv?.vars?.banner_detail){
+    const bi=document.getElementById('banner-img');
+    bi.src=srv.vars.banner_detail;
+    bw.style.display='block';
+    bi.onerror=()=>{bw.style.display='none'};
+  } else bw.style.display='none';
+
+  // Metrics
+  if(srv){
+    const players=srv.clients||0,max=srv.sv_maxclients||32;
+    const pct=Math.min(100,Math.round(players/max*100));
+    document.getElementById('m-status').innerHTML='<span class="badge-online">● Online</span>';
+    set('m-mode',srv.gametype||'');
+    set('m-players',`${players} / ${max}`);
+    const pf=document.getElementById('pfill');
+    setTimeout(()=>{pf.style.width=pct+'%'},100);
+    pf.className='players-fill'+(pct>=100?' full':pct>=75?' high':'');
+  } else {
+    document.getElementById('m-status').innerHTML='<span class="badge-offline">● Offline</span>';
+    set('m-mode','Could not connect');
+    set('m-players','— / —');
+    document.getElementById('pfill').style.width='0%';
+  }
+
+  set('m-flag',fl||'🌐');
+  set('m-cname',cname);
+  set('m-isp',(geo.isp||'').replace(/^AS\d+\s*/,'').substring(0,24)||'—');
+  set('m-asn',geo.asn||'');
+
+  // Server rows
+  if(srv){
+    const v=srv.vars||{};
+    set('r-name',(srv.hostname||'').replace(/\^[0-9]/g,'').trim());
+    set('r-players',`${srv.clients||0} / ${srv.sv_maxclients||'?'}  (reported: ${srv.selfReportedClients||'—'})`);
+    set('r-gamemode',v.gametype||srv.gametype||'—');
+    set('r-map',v.mapname||srv.mapname||'—');
+    set('r-build',v['sv_enforceGameBuild']||'—');
+    set('r-onesync',v.onesync_enabled==='true'?'✓ Enabled':'✗ Disabled');
+    set('r-locale',v.locale||'—');
+    set('r-premium',PM[v.premium]||v.premium||'—');
+    set('r-txadmin',v['txAdmin-version']?'v'+v['txAdmin-version']:'—');
+    set('r-fx',srv.server||'—');
+    if(srv.lastSeen){const d=new Date(srv.lastSeen);set('r-seen',d.toLocaleString('en-GB'))}else set('r-seen','—');
+
+    // Tags
+    const te=document.getElementById('r-tags');te.innerHTML='';
+    const ts=v.tags||'';
+    if(ts){[...new Set(ts.split(',').map(t=>t.trim()).filter(Boolean))].forEach(t=>{const s=document.createElement('span');s.className='tag';s.textContent=t;te.appendChild(s);})}
+    else te.innerHTML='<span style="color:var(--text3);font-size:12px">No tags</span>';
+
+    // Owner
+    if(srv.ownerName){
+      document.getElementById('owner-section').style.display='block';
+      const av=document.getElementById('owner-av');
+      av.src=srv.ownerAvatar||'';av.onerror=()=>{av.style.display='none'};
+      set('owner-name',srv.ownerName);
+      const ol=document.getElementById('owner-link');ol.href=srv.ownerProfile||'#';ol.textContent=srv.ownerProfile||'';
+    }
+
+    // Players
+    allPlayers=(srv.players||[]).sort((a,b)=>a.ping-b.ping);
+    set('tc-p',allPlayers.length);
+    document.getElementById('psearch').value='';
+    document.getElementById('pmeta').textContent=`${allPlayers.length} players online · sorted by ping`;
+    renderPlayers(allPlayers);
+
+    // Resources
+    allResources=srv.resources||[];
+    set('tc-r',allResources.length);
+    document.getElementById('rsearch').value='';
+    document.getElementById('rmeta').textContent=`${allResources.length} total resources`;
+    renderResources(allResources,'');
+  } else {
+    allPlayers=[];allResources=[];
+    set('tc-p','0');set('tc-r','0');
+    document.getElementById('plist').innerHTML='<div class="empty">Server is offline or unreachable</div>';
+    document.getElementById('rgrid').innerHTML='<div class="empty" style="width:100%">Server is offline or unreachable</div>';
+    document.getElementById('r-tags').innerHTML='<span style="color:var(--text3);font-size:12px">—</span>';
+    document.getElementById('owner-section').style.display='none';
+  }
+
+  // IP rows
+  set('r-ip',geo.ip||resolvedIp||'—');
+  set('r-ep',resolvedIp?(resolvedIp+':30120'):cfxCode||'—');
+  set('r-country',fl?`${fl} ${cname}`:cname);
+  set('r-city',geo.city||'—');
+  set('r-region',geo.region||'—');
+  set('r-isp',(geo.isp||'').replace(/^AS\d+\s*/,'')||'—');
+  set('r-as',geo.asn||'—');
+  set('r-tz',geo.tz||'—');
+  set('r-coords',geo.lat&&geo.lon?`${geo.lat.toFixed(4)}, ${geo.lon.toFixed(4)}`:'—');
+}
+
+['ip-input','port-input'].forEach(id=>{
+  document.getElementById(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')doLookup()});
+});
 </script>
 </body>
 </html>
