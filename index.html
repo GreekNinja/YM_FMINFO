@@ -552,7 +552,7 @@ async function doLookup(){
 
     if(cfxCode){
       try{
-        const r=await fetch(`https://servers-frontend.fivem.net/api/servers/single/${cfxCode}`);
+        const r=await fetch(`https://frontend.cfx-services.net/api/servers/single/${cfxCode}`);
         if(r.ok){const d=await r.json();srv=d.Data;if(srv?.connectEndPoints?.length)resolvedIp=srv.connectEndPoints[0].split(':')[0];}
       }catch(e){console.warn('CFX failed',e)}
     }
