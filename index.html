@@ -895,8 +895,9 @@
 
             // Banner
             const bw = document.getElementById('banner-wrap');
-            if (srv?.vars?.banner_detail) {
-                document.getElementById('banner-img').src = srv.vars.banner_detail;
+            const bUrl = srv?.vars?.banner_detail || srv?.vars?.banner_connecting;
+            if (bUrl) {
+                document.getElementById('banner-img').src = bUrl;
                 bw.style.display = 'block';
             } else bw.style.display = 'none';
 
@@ -996,9 +997,9 @@
             
             const c = document.getElementById('plist');
             
-            // Check if players are obfuscated by the server
+            // Check if players are obfuscated by FiveM
             if (allPlayers.length > 0 && allPlayers.every(p => p.name === 'Player' && p.id === 0 && p.ping === 0)) {
-                c.innerHTML = '<div class="empty-state">Player details are hidden by the server to prevent metagaming.</div>';
+                c.innerHTML = '<div class="empty-state">Player lists are hidden by FiveM for privacy and to prevent metagaming.</div>';
                 return;
             }
 
